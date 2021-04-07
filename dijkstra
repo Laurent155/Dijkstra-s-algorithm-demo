@@ -1,0 +1,81 @@
+from draw_window import *
+
+
+class Graph:
+    def __init__(self):
+        self.graph_dict = {}
+        self.vertices = []
+        self.obstacles = []
+
+    def add_vertex(self, v):
+        if v not in self.vertices:
+            self.vertices.append(v)
+            self.graph_dict[v] = {}
+
+    def add_edge(self, v1, v2, edge_weight):
+        if v1 in self.vertices and v2 in self.vertices:
+            self.graph_dict[v1][v2] = edge_weight
+            self.graph_dict[v2][v1] = edge_weight
+
+
+def dijkstra_algorithm(graph, start_vertex, end_vertex):
+    start_vertex = start_vertex[0] + start_vertex[1] * 1j
+    end_vertex = end_vertex[0] + end_vertex[1] * 1j
+    current_node = start_vertex
+    vertices_traversed = []
+    vertices_left = init_vertices_left(graph, start_vertex)
+    shortest_distance = init_shortest_dist(graph, start_vertex)
+    shortest_paths = init_shortest_paths(graph, start_vertex)
+    while end_vertex in vertices_left:
+        vertices_traversed.append(current_node)
+        for v in graph.graph_dict[current_node]:
+            if shortest_distance[current_node] + graph.graph_dict[current_node][v] < shortest_distance[v]:
+                shortest_distance[v] = shortest_distance[current_node] + graph.graph_dict[current_node][v]
+                shortest_paths[v] = shortest_paths[current_node] + [v]
+
+        vertices_left.remove(current_node)
+        each_min = [float("inf"), 0]
+        for vertex in vertices_left:
+            if shortest_distance[vertex] < each_min[0]:
+                each_min = [shortest_distance[vertex], vertex]
+        current_node = each_min[1]
+        update_paths(win, start_vertex, end_vertex, graph.obstacles, vertices_traversed)
+    return [shortest_distance[end_vertex], shortest_paths[end_vertex], vertices_traversed]
+
+
+def init_vertices_left(graph, start_vertex):
+    vertices_left = graph.vertices
+    return vertices_left
+
+
+def init_shortest_dist(graph, start_vertex):
+    shortest = {vertex: float("inf") for vertex in graph.vertices}
+    shortest[start_vertex] = 0
+    return shortest
+
+
+def init_shortest_paths(graph, start_vertex):
+    shortest = {vertex: [] for vertex in graph.vertices}
+    shortest[start_vertex] = [start_vertex]
+    return shortest
+
+
+def create_graph(graph, obs):
+    graph.obstacles = obs
+    for i in range(40):
+        for k in range(40):
+            if [i, k] not in obs:
+                graph.add_vertex(i + k * 1j)
+    for vertex in graph.vertices:
+        up = vertex - 1j
+        down = vertex + 1j
+        left = vertex - 1
+        right = vertex + 1
+        if up in graph.vertices:
+            graph.add_edge(vertex, up, 1)
+        if down in graph.vertices:
+            graph.add_edge(vertex, down, 1)
+        if left in graph.vertices:
+            graph.add_edge(vertex, left, 1)
+        if right in graph.vertices:
+            graph.add_edge(vertex, right, 1)
