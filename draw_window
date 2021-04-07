@@ -1,0 +1,52 @@
+import pygame
+
+width = 800
+height = 800
+win = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Dijkstra's Algorithm")
+pygame.font.init()
+myfont = pygame.font.SysFont("Comic Sans MS", 35)
+
+
+def draw_window(window):
+    pygame.draw.line(window, (0, 0, 0), (0, 0), (800, 0), 1)
+    for i in range(1, 40):
+        pygame.draw.line(window, (0, 0, 0), (0, 20 * i), (800, 20 * i), 1)
+        pygame.draw.line(window, (0, 0, 0), (20 * i, 0), (20 * i, 800), 1)
+
+
+def update_window(window, start, end, obs):
+    draw_window(window)
+    if start != (-1, -1):
+        pygame.draw.rect(window, (255, 0, 0), (start[0] * 20, start[1] * 20, 20, 20))
+    if end != (-1, -1):
+        pygame.draw.rect(window, (255, 0, 0), (end[0] * 20, end[1] * 20, 20, 20))
+    for i in obs:
+        pygame.draw.rect(window, (0, 0, 0), (i[0] * 20, i[1] * 20, 20, 20))
+    for i in range(1, 40):
+        pygame.draw.line(window, (0, 0, 0), (0, 20 * i), (800, 20 * i), 1)
+        pygame.draw.line(window, (0, 0, 0), (20 * i, 0), (20 * i, 800), 1)
+
+
+def update_paths(window, start, end, obs, vertices_visited):
+    win.fill((255, 255, 255))
+    for vertex in vertices_visited:
+        pygame.draw.rect(window, (0, 0, 255), (vertex.real * 20, vertex.imag * 20, 20, 20))
+    for i in range(1, 40):
+        pygame.draw.line(window, (0, 0, 0), (0, 20 * i), (800, 20 * i), 1)
+        pygame.draw.line(window, (0, 0, 0), (20 * i, 0), (20 * i, 800), 1)
+    update_window(window, [start.real, start.imag], [end.real, end.imag], obs)
+    pygame.display.update()
+
+
+def final_update(window, start, end, obs, vertices_visited, path):
+    win.fill((255, 255, 255))
+    for vertex in vertices_visited:
+        pygame.draw.rect(window, (0, 0, 255), (vertex.real * 20, vertex.imag * 20, 20, 20))
+    for i in path:
+        pygame.draw.rect(window, (0, 255, 0), (i.real * 20, i.imag * 20, 20, 20))
+    for i in range(1, 40):
+        pygame.draw.line(window, (0, 0, 0), (0, 20 * i), (800, 20 * i), 1)
+        pygame.draw.line(window, (0, 0, 0), (20 * i, 0), (20 * i, 800), 1)
+    update_window(window, start, end, obs)
+    pygame.display.update()
